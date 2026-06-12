@@ -1,0 +1,1784 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <link rel="preconnect" href="https://fonts.googleapis.com/">
+  <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin="">
+  <link href="css2.css" rel="stylesheet">
+
+  <meta charset="UTF-8">
+ 
+  <title>Latin Vocab Tester</title>
+  <style>
+  :root {
+    --bg: #f6f7fb;
+    --card: #ffffff;
+    --text: #1f2937;
+    --muted: #6b7280;
+    --border: #e5e7eb;
+    --accent: #4f46e5;
+    --correct: #16a34a;
+    --wrong: #dc2626;
+    --shadow: 0 4px 12px rgba(0,0,0,0.04);
+  }
+  
+
+  /* 🌙 Dark Mode Variables */
+  body.dark {
+    --bg: #0f172a;
+    --card: #1e293b;
+    --text: #f1f5f9;
+    --muted: #94a3b8;
+    --border: #334155;
+    --accent: #818cf8;
+  }
+
+  body {
+    margin: 0;
+    font-family: system-ui, -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px 20px;
+    transition: background 0.3s ease;
+  }
+ 
+
+  /* Headings */
+  .title {
+    font-size: 28px;
+    font-weight: 800;
+    margin-bottom: 24px;
+    color: var(--text);
+  }
+
+  .title2 {
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-weight: 700;
+    color: var(--accent);
+    margin-bottom: 12px;
+  }
+
+  /* Layout Containers */
+  .controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    width: min(1000px, 100%);
+    justify-content: center;
+  }
+
+  .side, .bottom {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: var(--shadow);
+    box-sizing: border-box;
+  }
+
+  .side { width: calc(50% - 10px); }
+  .bottom { width: 100%; }
+
+  /* Checkboxes & Selection */
+  .checkBoxes {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 8px;
+    margin-bottom: 15px;
+  }
+
+  .checkBoxes label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    background: var(--bg);
+    border-radius: 8px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+
+  .checkBoxes label:hover {
+    background: var(--border);
+  }
+
+  .allSelector {
+    display: inline-block;
+    padding: 6px 12px;
+    font-size: 12px;
+    font-weight: 600;
+    background: var(--accent);
+    color: white;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: opacity 0.2s;
+  }
+
+  /* Buttons */
+  button {
+    background: var(--accent);
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    font-size: 16px;
+    font-weight: 600;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: transform 0.1s, opacity 0.2s;
+  }
+
+  button:hover { opacity: 0.9; }
+  button:active { transform: scale(0.98); }
+
+  #startBtn {
+    margin: 30px 0;
+    padding: 16px 40px;
+    font-size: 18px;
+    box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.3);
+  }
+
+  /* Tester Section */
+  .tester {
+    width: min(600px, 100%);
+    text-align: center;
+    margin-top: 20px;
+  }
+
+  #question {
+    font-size: 24px;
+    font-weight: 700;
+    margin: 20px 0;
+  }
+
+  #answerInput {
+    width: 80%;
+    padding: 14px;
+    font-size: 18px;
+    border: 2px solid var(--border);
+    border-radius: 12px;
+    outline: none;
+    text-align: center;
+    background: var(--card);
+    color: var(--text);
+    transition: border-color 0.2s;
+  }
+
+  #answerInput:focus {
+    border-color: var(--accent);
+  }
+
+  #feedback {
+    margin-top: 15px;
+    font-size: 18px;
+    min-height: 1.5em;
+  }
+
+  #timer {
+    font-weight: 700;
+    color: var(--muted);
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Ads/Footer */
+  .adContainer {
+    margin: 20px 0;
+    font-size: 14px;
+    width: min(1000px, 100%);
+  }
+
+  .ads {
+    display: flex;
+    gap: 10px;
+    margin-top: 12px;
+  }
+
+  .ad {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    padding: 10px;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--accent);
+    flex: 1;
+    cursor: pointer;
+    transition: all 0.2s;
+    width: calc(20%-10px);
+  }
+
+  .ad:hover {
+    background: var(--card);
+    border-color: var(--accent);
+  }
+
+  .hidden { display: none; }
+  /* =========================
+    TYPE + SUBTYPE GROUPING
+    ========================= */
+
+    #typeCheckboxes {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    }
+
+    /* Entire type section */
+    .typeGroup {
+    width: 95%;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+
+    padding: 12px;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: var(--bg);
+    }
+
+    /* Parent type label */
+    .typeHeader {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text);
+
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--border);
+    }
+
+    /* Container for subtypes */
+    .subtypeContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+
+    margin-left: 20px;
+    margin-top: 4px;
+    }
+
+    /* Child subtype labels */
+    .subtypeLabel {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    font-size: 14px;
+    font-weight: 500;
+
+    padding: 6px 10px;
+
+    border-radius: 8px;
+    background: var(--card);
+
+    cursor: pointer;
+    transition: background 0.2s ease;
+    }
+
+    .subtypeLabel:hover {
+    background: var(--border);
+    }
+
+    /* Parent checkbox */
+    .typeHeader input,
+    .subtypeLabel input {
+    cursor: pointer;
+    }
+
+    /* Remove old grid layout ONLY for type area */
+    #typeCheckboxes.checkBoxes {
+    display: flex;
+    flex-direction: column;
+    }
+</style>
+</head>
+
+<body>
+    <img class="banner" src="Latin%20Vocab%20Tester_files/banner2.png" alt="" style="width: 100%; position: fixed;  height: 10vh; object-fit: cover; top: 0; left: 0; z-index: 9999;">
+  <div style="margin-top: 10vh;" class="title">Latin Vocabulary Tester</div>
+  <section class="controls">
+
+    <div class="side side1">
+        <div class="title2">Stages</div>
+        <div class="checkBoxes" id="stageCheckboxes">
+        
+        <label>
+            <input class="stageCheckboxes" type="checkbox" value="1" checked="checked">
+            Stage 1
+        </label>
+        
+        <label>
+            <input class="stageCheckboxes" type="checkbox" value="2" checked="checked">
+            Stage 2
+        </label>
+        
+        <label>
+            <input class="stageCheckboxes" type="checkbox" value="3" checked="checked">
+            Stage 3
+        </label>
+        
+        <label>
+            <input class="stageCheckboxes" type="checkbox" value="4" checked="checked">
+            Stage 4
+        </label>
+        
+        <label>
+            <input class="stageCheckboxes" type="checkbox" value="5" checked="checked">
+            Stage 5
+        </label>
+        
+        <label>
+            <input class="stageCheckboxes" type="checkbox" value="6" checked="checked">
+            Stage 6
+        </label>
+        
+        <label>
+            <input class="stageCheckboxes" type="checkbox" value="7" checked="checked">
+            Stage 7
+        </label>
+        
+        <label>
+            <input class="stageCheckboxes" type="checkbox" value="8" checked="checked">
+            Stage 8
+        </label>
+        
+        <label>
+            <input class="stageCheckboxes" type="checkbox" value="9" checked="checked">
+            Stage 9
+        </label>
+        
+        <label>
+            <input class="stageCheckboxes" type="checkbox" value="10" checked="checked">
+            Stage 10
+        </label>
+        
+        <label>
+            <input class="stageCheckboxes" type="checkbox" value="11" checked="checked">
+            Stage 11
+        </label>
+        
+        <label>
+            <input class="stageCheckboxes" type="checkbox" value="12" checked="checked">
+            Stage 12
+        </label>
+        
+        <label>
+            <input class="stageCheckboxes" type="checkbox" value="13" checked="checked">
+            Stage 13
+        </label>
+        
+        <label>
+            <input class="stageCheckboxes" type="checkbox" value="14" checked="checked">
+            Stage 14
+        </label>
+        
+        <label>
+            <input class="stageCheckboxes" type="checkbox" value="15" checked="checked">
+            Stage 15
+        </label>
+        
+        <label>
+            <input class="stageCheckboxes" type="checkbox" value="16" checked="checked">
+            Stage 16
+        </label>
+        
+        <label>
+            <input class="stageCheckboxes" type="checkbox" value="17" checked="checked">
+            Stage 17
+        </label>
+        
+        <label>
+            <input class="stageCheckboxes" type="checkbox" value="18" checked="checked">
+            Stage 18
+        </label>
+        
+        <label>
+            <input class="stageCheckboxes" type="checkbox" value="19" checked="checked">
+            Stage 19
+        </label>
+        
+        <label>
+            <input class="stageCheckboxes" type="checkbox" value="20" checked="checked">
+            Stage 20
+        </label>
+        
+        <label>
+            <input class="stageCheckboxes" type="checkbox" value="21" checked="checked">
+            Stage 21
+        </label>
+        
+        <label>
+            <input class="stageCheckboxes" type="checkbox" value="22" checked="checked">
+            Stage 22
+        </label>
+        
+        <label>
+            <input class="stageCheckboxes" type="checkbox" value="23" checked="checked">
+            Stage 23
+        </label>
+        
+        <label>
+            <input class="stageCheckboxes" type="checkbox" value="24" checked="checked">
+            Stage 24
+        </label>
+        
+        <label>
+            <input class="stageCheckboxes" type="checkbox" value="25" checked="checked">
+            Stage 25
+        </label>
+        
+        <label>
+            <input class="stageCheckboxes" type="checkbox" value="26" checked="checked">
+            Stage 26
+        </label>
+        
+        <label>
+            <input class="stageCheckboxes" type="checkbox" value="27" checked="checked">
+            Stage 27
+        </label>
+        
+        <label>
+            <input class="stageCheckboxes" type="checkbox" value="28" checked="checked">
+            Stage 28
+        </label>
+        
+        <label>
+            <input class="stageCheckboxes" type="checkbox" value="29" checked="checked">
+            Stage 29
+        </label>
+        
+        <label>
+            <input class="stageCheckboxes" type="checkbox" value="30" checked="checked">
+            Stage 30
+        </label>
+        
+        <label>
+            <input class="stageCheckboxes" type="checkbox" value="31" checked="checked">
+            Stage 31
+        </label>
+        
+        <label>
+            <input class="stageCheckboxes" type="checkbox" value="32" checked="checked">
+            Stage 32
+        </label>
+        
+        <label>
+            <input class="stageCheckboxes" type="checkbox" value="33" checked="checked">
+            Stage 33
+        </label>
+        
+        <label>
+            <input class="stageCheckboxes" type="checkbox" value="34" checked="checked">
+            Stage 34
+        </label>
+        
+        <label>
+            <input class="stageCheckboxes" type="checkbox" value="35" checked="checked">
+            Stage 35
+        </label>
+        
+        <label>
+            <input class="stageCheckboxes" type="checkbox" value="36" checked="checked">
+            Stage 36
+        </label>
+        
+        <label>
+            <input class="stageCheckboxes" type="checkbox" value="37" checked="checked">
+            Stage 37
+        </label>
+        
+        <label>
+            <input class="stageCheckboxes" type="checkbox" value="38" checked="checked">
+            Stage 38
+        </label>
+        
+        <label>
+            <input class="stageCheckboxes" type="checkbox" value="39" checked="checked">
+            Stage 39
+        </label>
+        
+        <label>
+            <input class="stageCheckboxes" type="checkbox" value="40" checked="checked">
+            Stage 40
+        </label>
+        </div>
+        <div class="allCheckboxSelector allSelector">
+            Select All
+        </div>
+    </div>
+
+    <div class="side side2">
+        <div class="title2">Word Types</div>
+        <div class="checkBoxes" id="typeCheckboxes">
+        
+        <div class="typeGroup" style="
+                margin-bottom:18px;
+                border:1px solid var(--border);
+                border-radius:12px;
+                padding:12px;
+                background:var(--bg);
+             ">
+
+            <label style="
+                display:flex;
+                align-items:center;
+                gap:8px;
+                font-weight:700;
+                margin-bottom:10px;
+            ">
+
+                <input class="typeCheckboxes" type="checkbox" value="noun" data-type="noun" checked="checked">
+
+                Nouns
+
+            </label>
+        
+            <div class="subtypeContainer" style="
+                    margin-left:22px;
+                    display:flex;
+                    flex-direction:column;
+                    gap:6px;
+                ">
+            
+                <label style="
+                    display:flex;
+                    align-items:center;
+                    gap:8px;
+                    font-size:14px;
+                ">
+
+                    <input class="subtypeCheckboxes" type="checkbox" value="masculine" data-parent="noun" checked="checked">
+
+                    Masculine
+
+                </label>
+                
+                <label style="
+                    display:flex;
+                    align-items:center;
+                    gap:8px;
+                    font-size:14px;
+                ">
+
+                    <input class="subtypeCheckboxes" type="checkbox" value="feminine" data-parent="noun" checked="checked">
+
+                    Feminine
+
+                </label>
+                
+                <label style="
+                    display:flex;
+                    align-items:center;
+                    gap:8px;
+                    font-size:14px;
+                ">
+
+                    <input class="subtypeCheckboxes" type="checkbox" value="neuter" data-parent="noun" checked="checked">
+
+                    Neuter
+
+                </label>
+                
+                <label style="
+                    display:flex;
+                    align-items:center;
+                    gap:8px;
+                    font-size:14px;
+                ">
+
+                    <input class="subtypeCheckboxes" type="checkbox" value="masculine/feminine" data-parent="noun" checked="checked">
+
+                    Masculine/feminine
+
+                </label>
+                
+                <label style="
+                    display:flex;
+                    align-items:center;
+                    gap:8px;
+                    font-size:14px;
+                ">
+
+                    <input class="subtypeCheckboxes" type="checkbox" value="neuter plural" data-parent="noun" checked="checked">
+
+                    Neuter plural
+
+                </label>
+                
+                <label style="
+                    display:flex;
+                    align-items:center;
+                    gap:8px;
+                    font-size:14px;
+                ">
+
+                    <input class="subtypeCheckboxes" type="checkbox" value="feminine plural" data-parent="noun" checked="checked">
+
+                    Feminine plural
+
+                </label>
+                
+                <label style="
+                    display:flex;
+                    align-items:center;
+                    gap:8px;
+                    font-size:14px;
+                ">
+
+                    <input class="subtypeCheckboxes" type="checkbox" value="masculine plural" data-parent="noun" checked="checked">
+
+                    Masculine plural
+
+                </label>
+                </div></div>
+        <div class="typeGroup" style="
+                margin-bottom:18px;
+                border:1px solid var(--border);
+                border-radius:12px;
+                padding:12px;
+                background:var(--bg);
+             ">
+
+            <label style="
+                display:flex;
+                align-items:center;
+                gap:8px;
+                font-weight:700;
+                margin-bottom:10px;
+            ">
+
+                <input class="typeCheckboxes" type="checkbox" value="verb" data-type="verb" checked="checked">
+
+                Verbs
+
+            </label>
+        
+            <div class="subtypeContainer" style="
+                    margin-left:22px;
+                    display:flex;
+                    flex-direction:column;
+                    gap:6px;
+                ">
+            
+                <label style="
+                    display:flex;
+                    align-items:center;
+                    gap:8px;
+                    font-size:14px;
+                ">
+
+                    <input class="subtypeCheckboxes" type="checkbox" value="dative-taking" data-parent="verb" checked="checked">
+
+                    Dative-taking
+
+                </label>
+                
+                <label style="
+                    display:flex;
+                    align-items:center;
+                    gap:8px;
+                    font-size:14px;
+                ">
+
+                    <input class="subtypeCheckboxes" type="checkbox" value="idiom" data-parent="verb" checked="checked">
+
+                    Idiom
+
+                </label>
+                </div></div>
+        <div class="typeGroup" style="
+                margin-bottom:18px;
+                border:1px solid var(--border);
+                border-radius:12px;
+                padding:12px;
+                background:var(--bg);
+             ">
+
+            <label style="
+                display:flex;
+                align-items:center;
+                gap:8px;
+                font-weight:700;
+                margin-bottom:10px;
+            ">
+
+                <input class="typeCheckboxes" type="checkbox" value="deponent verb" data-type="deponent verb" checked="checked">
+
+                Deponent verbs
+
+            </label>
+        
+            <div class="subtypeContainer" style="
+                    margin-left:22px;
+                    display:flex;
+                    flex-direction:column;
+                    gap:6px;
+                ">
+            
+                <label style="
+                    display:flex;
+                    align-items:center;
+                    gap:8px;
+                    font-size:14px;
+                ">
+
+                    <input class="subtypeCheckboxes" type="checkbox" value="genitive-taking" data-parent="deponent verb" checked="checked">
+
+                    Genitive-taking
+
+                </label>
+                
+                <label style="
+                    display:flex;
+                    align-items:center;
+                    gap:8px;
+                    font-size:14px;
+                ">
+
+                    <input class="subtypeCheckboxes" type="checkbox" value="dative-taking" data-parent="deponent verb" checked="checked">
+
+                    Dative-taking
+
+                </label>
+                
+                <label style="
+                    display:flex;
+                    align-items:center;
+                    gap:8px;
+                    font-size:14px;
+                ">
+
+                    <input class="subtypeCheckboxes" type="checkbox" value="ablative-taking" data-parent="deponent verb" checked="checked">
+
+                    Ablative-taking
+
+                </label>
+                </div></div>
+        <div class="typeGroup" style="
+                margin-bottom:18px;
+                border:1px solid var(--border);
+                border-radius:12px;
+                padding:12px;
+                background:var(--bg);
+             ">
+
+            <label style="
+                display:flex;
+                align-items:center;
+                gap:8px;
+                font-weight:700;
+                margin-bottom:0;
+            ">
+
+                <input class="typeCheckboxes" type="checkbox" value="preposition" data-type="preposition" checked="checked">
+
+                Prepositions
+
+            </label>
+        </div>
+        <div class="typeGroup" style="
+                margin-bottom:18px;
+                border:1px solid var(--border);
+                border-radius:12px;
+                padding:12px;
+                background:var(--bg);
+             ">
+
+            <label style="
+                display:flex;
+                align-items:center;
+                gap:8px;
+                font-weight:700;
+                margin-bottom:10px;
+            ">
+
+                <input class="typeCheckboxes" type="checkbox" value="pronoun" data-type="pronoun" checked="checked">
+
+                Pronouns
+
+            </label>
+        
+            <div class="subtypeContainer" style="
+                    margin-left:22px;
+                    display:flex;
+                    flex-direction:column;
+                    gap:6px;
+                ">
+            
+                <label style="
+                    display:flex;
+                    align-items:center;
+                    gap:8px;
+                    font-size:14px;
+                ">
+
+                    <input class="subtypeCheckboxes" type="checkbox" value="personal" data-parent="pronoun" checked="checked">
+
+                    Personal
+
+                </label>
+                
+                <label style="
+                    display:flex;
+                    align-items:center;
+                    gap:8px;
+                    font-size:14px;
+                ">
+
+                    <input class="subtypeCheckboxes" type="checkbox" value="indefinite" data-parent="pronoun" checked="checked">
+
+                    Indefinite
+
+                </label>
+                
+                <label style="
+                    display:flex;
+                    align-items:center;
+                    gap:8px;
+                    font-size:14px;
+                ">
+
+                    <input class="subtypeCheckboxes" type="checkbox" value="demonstrative" data-parent="pronoun" checked="checked">
+
+                    Demonstrative
+
+                </label>
+                
+                <label style="
+                    display:flex;
+                    align-items:center;
+                    gap:8px;
+                    font-size:14px;
+                ">
+
+                    <input class="subtypeCheckboxes" type="checkbox" value="intensive" data-parent="pronoun" checked="checked">
+
+                    Intensive
+
+                </label>
+                
+                <label style="
+                    display:flex;
+                    align-items:center;
+                    gap:8px;
+                    font-size:14px;
+                ">
+
+                    <input class="subtypeCheckboxes" type="checkbox" value="relative" data-parent="pronoun" checked="checked">
+
+                    Relative
+
+                </label>
+                
+                <label style="
+                    display:flex;
+                    align-items:center;
+                    gap:8px;
+                    font-size:14px;
+                ">
+
+                    <input class="subtypeCheckboxes" type="checkbox" value="interrogative" data-parent="pronoun" checked="checked">
+
+                    Interrogative
+
+                </label>
+                </div></div>
+        <div class="typeGroup" style="
+                margin-bottom:18px;
+                border:1px solid var(--border);
+                border-radius:12px;
+                padding:12px;
+                background:var(--bg);
+             ">
+
+            <label style="
+                display:flex;
+                align-items:center;
+                gap:8px;
+                font-weight:700;
+                margin-bottom:10px;
+            ">
+
+                <input class="typeCheckboxes" type="checkbox" value="adjective" data-type="adjective" checked="checked">
+
+                Adjectives
+
+            </label>
+        
+            <div class="subtypeContainer" style="
+                    margin-left:22px;
+                    display:flex;
+                    flex-direction:column;
+                    gap:6px;
+                ">
+            
+                <label style="
+                    display:flex;
+                    align-items:center;
+                    gap:8px;
+                    font-size:14px;
+                ">
+
+                    <input class="subtypeCheckboxes" type="checkbox" value="numerical" data-parent="adjective" checked="checked">
+
+                    Numerical
+
+                </label>
+                
+                <label style="
+                    display:flex;
+                    align-items:center;
+                    gap:8px;
+                    font-size:14px;
+                ">
+
+                    <input class="subtypeCheckboxes" type="checkbox" value="interrogative" data-parent="adjective" checked="checked">
+
+                    Interrogative
+
+                </label>
+                </div></div>
+        <div class="typeGroup" style="
+                margin-bottom:18px;
+                border:1px solid var(--border);
+                border-radius:12px;
+                padding:12px;
+                background:var(--bg);
+             ">
+
+            <label style="
+                display:flex;
+                align-items:center;
+                gap:8px;
+                font-weight:700;
+                margin-bottom:0;
+            ">
+
+                <input class="typeCheckboxes" type="checkbox" value="perfect active participle" data-type="perfect active participle" checked="checked">
+
+                Perfect active participles
+
+            </label>
+        </div>
+        <div class="typeGroup" style="
+                margin-bottom:18px;
+                border:1px solid var(--border);
+                border-radius:12px;
+                padding:12px;
+                background:var(--bg);
+             ">
+
+            <label style="
+                display:flex;
+                align-items:center;
+                gap:8px;
+                font-weight:700;
+                margin-bottom:10px;
+            ">
+
+                <input class="typeCheckboxes" type="checkbox" value="adverb" data-type="adverb" checked="checked">
+
+                Adverbs
+
+            </label>
+        
+            <div class="subtypeContainer" style="
+                    margin-left:22px;
+                    display:flex;
+                    flex-direction:column;
+                    gap:6px;
+                ">
+            
+                <label style="
+                    display:flex;
+                    align-items:center;
+                    gap:8px;
+                    font-size:14px;
+                ">
+
+                    <input class="subtypeCheckboxes" type="checkbox" value="interrogative" data-parent="adverb" checked="checked">
+
+                    Interrogative
+
+                </label>
+                
+                <label style="
+                    display:flex;
+                    align-items:center;
+                    gap:8px;
+                    font-size:14px;
+                ">
+
+                    <input class="subtypeCheckboxes" type="checkbox" value="other" data-parent="adverb" checked="checked">
+
+                    Other
+
+                </label>
+                
+                <label style="
+                    display:flex;
+                    align-items:center;
+                    gap:8px;
+                    font-size:14px;
+                ">
+
+                    <input class="subtypeCheckboxes" type="checkbox" value="degree" data-parent="adverb" checked="checked">
+
+                    Degree
+
+                </label>
+                
+                <label style="
+                    display:flex;
+                    align-items:center;
+                    gap:8px;
+                    font-size:14px;
+                ">
+
+                    <input class="subtypeCheckboxes" type="checkbox" value="temporal" data-parent="adverb" checked="checked">
+
+                    Temporal
+
+                </label>
+                
+                <label style="
+                    display:flex;
+                    align-items:center;
+                    gap:8px;
+                    font-size:14px;
+                ">
+
+                    <input class="subtypeCheckboxes" type="checkbox" value="locative" data-parent="adverb" checked="checked">
+
+                    Locative
+
+                </label>
+                </div></div>
+        <div class="typeGroup" style="
+                margin-bottom:18px;
+                border:1px solid var(--border);
+                border-radius:12px;
+                padding:12px;
+                background:var(--bg);
+             ">
+
+            <label style="
+                display:flex;
+                align-items:center;
+                gap:8px;
+                font-weight:700;
+                margin-bottom:0;
+            ">
+
+                <input class="typeCheckboxes" type="checkbox" value="exclamation" data-type="exclamation" checked="checked">
+
+                Exclamations
+
+            </label>
+        </div>
+        <div class="typeGroup" style="
+                margin-bottom:18px;
+                border:1px solid var(--border);
+                border-radius:12px;
+                padding:12px;
+                background:var(--bg);
+             ">
+
+            <label style="
+                display:flex;
+                align-items:center;
+                gap:8px;
+                font-weight:700;
+                margin-bottom:10px;
+            ">
+
+                <input class="typeCheckboxes" type="checkbox" value="particle" data-type="particle" checked="checked">
+
+                Particles
+
+            </label>
+        
+            <div class="subtypeContainer" style="
+                    margin-left:22px;
+                    display:flex;
+                    flex-direction:column;
+                    gap:6px;
+                ">
+            
+                <label style="
+                    display:flex;
+                    align-items:center;
+                    gap:8px;
+                    font-size:14px;
+                ">
+
+                    <input class="subtypeCheckboxes" type="checkbox" value="interrogative" data-parent="particle" checked="checked">
+
+                    Interrogative
+
+                </label>
+                </div></div>
+        <div class="typeGroup" style="
+                margin-bottom:18px;
+                border:1px solid var(--border);
+                border-radius:12px;
+                padding:12px;
+                background:var(--bg);
+             ">
+
+            <label style="
+                display:flex;
+                align-items:center;
+                gap:8px;
+                font-weight:700;
+                margin-bottom:10px;
+            ">
+
+                <input class="typeCheckboxes" type="checkbox" value="conjunction" data-type="conjunction" checked="checked">
+
+                Conjunctions
+
+            </label>
+        
+            <div class="subtypeContainer" style="
+                    margin-left:22px;
+                    display:flex;
+                    flex-direction:column;
+                    gap:6px;
+                ">
+            
+                <label style="
+                    display:flex;
+                    align-items:center;
+                    gap:8px;
+                    font-size:14px;
+                ">
+
+                    <input class="subtypeCheckboxes" type="checkbox" value="coordinating" data-parent="conjunction" checked="checked">
+
+                    Coordinating
+
+                </label>
+                
+                <label style="
+                    display:flex;
+                    align-items:center;
+                    gap:8px;
+                    font-size:14px;
+                ">
+
+                    <input class="subtypeCheckboxes" type="checkbox" value="subordinating" data-parent="conjunction" checked="checked">
+
+                    Subordinating
+
+                </label>
+                
+                <label style="
+                    display:flex;
+                    align-items:center;
+                    gap:8px;
+                    font-size:14px;
+                ">
+
+                    <input class="subtypeCheckboxes" type="checkbox" value="comparative" data-parent="conjunction" checked="checked">
+
+                    Comparative
+
+                </label>
+                
+                <label style="
+                    display:flex;
+                    align-items:center;
+                    gap:8px;
+                    font-size:14px;
+                ">
+
+                    <input class="subtypeCheckboxes" type="checkbox" value="correlative" data-parent="conjunction" checked="checked">
+
+                    Correlative
+
+                </label>
+                
+                <label style="
+                    display:flex;
+                    align-items:center;
+                    gap:8px;
+                    font-size:14px;
+                ">
+
+                    <input class="subtypeCheckboxes" type="checkbox" value="interrogative" data-parent="conjunction" checked="checked">
+
+                    Interrogative
+
+                </label>
+                </div></div></div>
+        <div class="allCheckboxSelector2 allSelector">
+            Select All
+        </div>
+    </div>
+
+    <div class="bottom">
+        <div class="title2">Other</div>
+        <div class="checkBoxes">
+            <label>
+                <input type="checkbox" id="directionToggle">
+                English → Latin
+            </label>
+
+            <label>
+                <input type="checkbox" id="noRepeatToggle">
+                Remove words once correct
+            </label>
+            <label>
+                <input type="checkbox" id="darkModeToggle">
+                Dark mode
+            </label>
+
+            <label>
+                <input type="checkbox" id="timerToggle">
+                Enable timer
+            </label>
+            <label>
+                <input type="checkbox" id="formatToggle">
+                Phone format
+            </label>
+        
+    </div>
+    
+   
+<button id="startBtn">Start Test</button>
+
+  <section class="tester hidden bottom">
+
+    <div id="timer"></div>
+
+    <div id="question">Press 'Start Test' to start!</div>
+
+    <input type="text" id="answerInput" class="answerInput" autocomplete="off">
+    <button id="submitBtn">Submit</button>
+
+    <div id="feedback"></div>
+    <div id="score"></div>
+    <section class="adContainer bottom">
+        <div style="font-size: 14px; color: var(--muted); margin-bottom: 10px;">Have a look at the Vocab Database!</div>
+        <div class="ads">
+            <div class="ad" onclick="window.location.href='./vocabData.html'">Vocab Database</div>
+            
+            
+        </div>
+        
+    </section>
+  </section>
+ <section class="adContainer bottom">
+        <div style="font-size: 14px; color: var(--muted); margin-bottom: 10px;">Check out our vocab database!</div>
+        <div class="ads">
+            <div class="ad" onclick="window.location.href='./vocabData.html'">Vocab database</div>
+        </div>
+    </section>
+ <section class="adContainer bottom">
+        <div style="font-size: 14px; color: var(--muted); margin-bottom: 10px;">Check out other quiz games!</div>
+        <div class="ads">
+            <div class="ad" onclick="window.location.href='./index.html'">Type-in Vocab Tester</div>
+            <div class="ad" onclick="window.location.href='./grammarHome.html'">Grammar Tester</div>
+            <div class="ad" onclick="window.location.href='./multiChoice.html'">Multi-Choice Vocab Tester</div>
+            <div class="ad" onclick="window.location.href='./hangman.html'">Hangman Game</div>
+            <div class="ad" onclick="window.location.href='./scramble.html'">Word Scramble Game</div>
+            
+        </div>
+    </section>
+     <div class="ad" onclick="window.location.href='./about.html'">About</div>
+  </div></section>
+ 
+
+
+<script src="vocabData.js"></script>
+<script>
+    let vocab = [];
+let pool = [];
+let current = null;
+let score = 0;
+let total = 0;
+let timerInterval = null;
+let timeLeft = 0;
+
+let allSelector = document.querySelector(".allCheckboxSelector");
+let allSelectorType = document.querySelector(".allCheckboxSelector2");
+
+/* LOAD VOCAB */
+vocab = vocabData;
+
+buildCheckboxes();
+
+console.log(vocab.length);
+console.log(vocab[0]);
+
+/* =========================
+   BUILD CHECKBOXES
+========================= */
+function buildCheckboxes() {
+
+    const stages =
+        [...new Set(vocab.map(v => v.stage))]
+        .sort((a,b)=>Number(a)-Number(b));
+
+    const types =
+        [...new Set(vocab.map(v => v.type))];
+
+    const stageDiv =
+        document.getElementById("stageCheckboxes");
+
+    const typeDiv =
+        document.getElementById("typeCheckboxes");
+
+    /* =========================
+       STAGES
+    ========================== */
+
+    stages.forEach(stage => {
+
+        stageDiv.innerHTML += `
+        <label>
+            <input
+                class="stageCheckboxes"
+                type="checkbox"
+                value="${stage}"
+                checked
+            >
+            Stage ${stage}
+        </label>
+        `;
+    });
+
+    /* =========================
+       TYPES + SUBTYPES
+    ========================== */
+
+    types.forEach(type => {
+
+        // all subtypes for this type
+        const typeSubtypes =
+            [...new Set(
+                vocab
+                .filter(v => v.type === type)
+                .map(v => v.subtype)
+            )];
+
+        const hasSubtypes =
+            typeSubtypes.some(s => s && s.trim() !== "");
+
+        /* -------------------------
+           TYPE HEADER
+        -------------------------- */
+
+        let typeHTML = `
+        <div class="typeGroup"
+             style="
+                margin-bottom:18px;
+                border:1px solid var(--border);
+                border-radius:12px;
+                padding:12px;
+                background:var(--bg);
+             ">
+
+            <label style="
+                display:flex;
+                align-items:center;
+                gap:8px;
+                font-weight:700;
+                margin-bottom:${hasSubtypes ? "10px" : "0"};
+            ">
+
+                <input
+                    class="typeCheckboxes"
+                    type="checkbox"
+                    value="${type}"
+                    data-type="${type}"
+                    checked
+                >
+
+                ${capitalise(type)}s
+
+            </label>
+        `;
+
+        /* -------------------------
+           SUBTYPES
+        -------------------------- */
+
+        if (hasSubtypes) {
+
+            typeHTML += `
+            <div
+                class="subtypeContainer"
+                style="
+                    margin-left:22px;
+                    display:flex;
+                    flex-direction:column;
+                    gap:6px;
+                ">
+            `;
+
+            typeSubtypes.forEach(subtype => {
+
+                // Skip blank subtype
+                if (!subtype || subtype.trim() === "") return;
+
+                typeHTML += `
+                <label style="
+                    display:flex;
+                    align-items:center;
+                    gap:8px;
+                    font-size:14px;
+                ">
+
+                    <input
+                        class="subtypeCheckboxes"
+                        type="checkbox"
+                        value="${subtype}"
+                        data-parent="${type}"
+                        checked
+                    >
+
+                    ${capitalise(subtype)}
+
+                </label>
+                `;
+            });
+
+            typeHTML += `</div>`;
+        }
+
+        typeHTML += `</div>`;
+
+        typeDiv.innerHTML += typeHTML;
+    });
+
+    /* =========================
+       PARENT → CHILD LINKING
+    ========================== */
+
+    document
+    .querySelectorAll(".typeCheckboxes")
+    .forEach(parentBox => {
+
+        parentBox.addEventListener("change", () => {
+
+            const type =
+                parentBox.dataset.type;
+
+            const children =
+                document.querySelectorAll(
+                    `.subtypeCheckboxes[data-parent="${type}"]`
+                );
+
+            children.forEach(child => {
+                child.checked = parentBox.checked;
+            });
+
+        });
+
+    });
+}
+
+/* =========================
+   START TEST
+========================= */
+document.getElementById("startBtn").onclick = () => {
+
+    const selectedStages =
+        [...document.querySelectorAll(".stageCheckboxes:checked")]
+        .map(cb => cb.value);
+
+    const selectedTypes =
+        [...document.querySelectorAll(".typeCheckboxes:checked")]
+        .map(cb => cb.value);
+
+    const selectedSubtypes =
+        [...document.querySelectorAll(".subtypeCheckboxes:checked")]
+        .map(cb => cb.value);
+
+    pool = vocab.filter(v => {
+
+        /* stage */
+        const stageMatch =
+            selectedStages.includes(v.stage);
+
+        /* type */
+        const typeMatch =
+            selectedTypes.includes(v.type);
+
+        /* subtype */
+
+        let subtypeMatch = true;
+
+        // words WITH subtypes
+        if (v.subtype && v.subtype.trim() !== "") {
+
+            subtypeMatch =
+                selectedSubtypes.includes(v.subtype);
+        }
+
+        // words WITHOUT subtypes
+        else {
+
+            subtypeMatch =
+                selectedTypes.includes(v.type);
+        }
+
+        return (
+            stageMatch &&
+            typeMatch &&
+            subtypeMatch
+        );
+    });
+
+    if (pool.length === 0) {
+
+        alert("No words selected!");
+
+        return;
+    }
+
+    score = 0;
+    total = 0;
+
+    document
+        .querySelector(".tester")
+        .classList
+        .remove("hidden");
+
+    nextQuestion();
+};
+
+/* =========================
+   NEXT QUESTION
+========================= */
+function nextQuestion() {
+
+    if (pool.length === 0) {
+        document.getElementById("question").textContent = "Finished!";
+        return;
+    }
+
+    current = pool[Math.floor(Math.random() * pool.length)];
+
+    total++;
+
+    const englishToLatin =
+        document.getElementById("directionToggle").checked;
+
+    let questionText = "";
+
+    if (englishToLatin) {
+
+        questionText = current.english.join(", ");
+
+    } else {
+
+        questionText = current.latin.join(", ");
+    }
+
+    /* SHOW TYPE + SUBTYPE */
+
+    const subtypeText = current.subtype
+        ? ` (${current.subtype})`
+        : "";
+
+    document.getElementById("question").innerHTML = `
+        <div style="font-size:14px;color:var(--muted);margin-bottom:8px;">
+            ${capitalise(current.type)}${subtypeText}
+        </div>
+        ${questionText}
+    `;
+
+    document.getElementById("answerInput").value = "";
+    document.getElementById("feedback").textContent = " - ";
+
+    if (document.getElementById("timerToggle").checked) {
+        startTimer();
+    }
+    cooldown = false
+}
+
+/* =========================
+   SUBMIT ANSWER
+========================= */
+let cooldown = false;
+document.getElementById("submitBtn").onclick = () => {
+    if(cooldown === false){
+    const input =
+        document.getElementById("answerInput")
+        .value
+        .trim()
+        .toLowerCase();
+
+    const englishToLatin =
+        document.getElementById("directionToggle").checked;
+
+    const correctAnswers = (
+        englishToLatin
+            ? current.latin
+            : current.english
+    ).map(a => a.toLowerCase());
+
+    const isCorrect = correctAnswers.includes(input);
+
+    if (isCorrect) {
+
+        score++;
+
+        document.getElementById("feedback").textContent =
+            "✅ Correct!";
+
+        if (document.getElementById("noRepeatToggle").checked) {
+
+            pool = pool.filter(w => w !== current);
+        }
+        setTimeout(nextQuestion, 700);
+    } else {
+
+        document.getElementById("feedback").textContent =
+            `❌ Correct answer: ${correctAnswers.join(", ")}`;
+            setTimeout(nextQuestion, 1500);
+    }
+
+    document.getElementById("score").textContent =
+        `Score: ${score} / ${total}`;
+
+    stopTimer();
+    cooldown = true;
+    
+}
+};
+
+
+/* =========================
+   ENTER KEY SUBMIT
+========================= */
+document.getElementById("answerInput")
+.addEventListener("keydown", e => {
+
+    if (e.key === "Enter") {
+
+        e.preventDefault();
+
+        document.getElementById("submitBtn").click();
+    }
+});
+
+/* =========================
+   TIMER
+========================= */
+function startTimer() {
+
+    stopTimer();
+
+    timeLeft = 10;
+
+    document.getElementById("timer").textContent =
+        `Time: ${timeLeft}`;
+
+    timerInterval = setInterval(() => {
+
+        timeLeft--;
+
+        document.getElementById("timer").textContent =
+            `Time: ${timeLeft}`;
+
+        if (timeLeft <= 0) {
+
+            stopTimer();
+
+            nextQuestion();
+        }
+
+    }, 1000);
+}
+
+function stopTimer() {
+    clearInterval(timerInterval);
+}
+
+/* =========================
+   DARK MODE
+========================= */
+document.getElementById("darkModeToggle").onchange = e => {
+
+    document.body.classList.toggle(
+        "dark",
+        e.target.checked
+    );
+};
+
+/* =========================
+   PHONE FORMAT
+========================= */
+let halfFormat = true;
+
+document.getElementById("formatToggle").onchange = () => {
+
+    halfFormat
+        ? document.querySelectorAll(".side")
+            .forEach(el => el.style.width = "100%")
+        : document.querySelectorAll(".side")
+            .forEach(el => el.style.width = "calc(50% - 10px)");
+
+    halfFormat = !halfFormat;
+};
+
+/* =========================
+   SELECT ALL STAGES
+========================= */
+let allSelectedStage = true;
+
+allSelector.onclick = () => {
+
+    const allStages =
+        document.querySelectorAll(".stageCheckboxes");
+
+    allStages.forEach(e => {
+        e.checked = !allSelectedStage;
+    });
+
+    allSelectedStage = !allSelectedStage;
+};
+
+/* =========================
+   SELECT ALL TYPES
+========================= */
+let allSelectedType = true;
+
+allSelectorType.onclick = () => {
+
+    const allTypes = [
+        ...document.querySelectorAll(".typeCheckboxes"),
+        ...document.querySelectorAll(".subtypeCheckboxes")
+    ];
+
+    allTypes.forEach(e => {
+        e.checked = !allSelectedType;
+    });
+
+    allSelectedType = !allSelectedType;
+};
+
+/* =========================
+   HELPER
+========================= */
+function capitalise(str) {
+
+    if (!str) return "";
+
+    return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
+</script>
+
+</body></html>
